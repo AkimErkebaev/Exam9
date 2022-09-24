@@ -17,7 +17,7 @@ class PhotoForm(forms.ModelForm):
 
     class Meta:
         model = Photo
-        exclude = ['id', 'is_created', 'user']
+        exclude = ['id', 'is_created', 'user', 'token']
 
 
 class AlbumForm(forms.ModelForm):

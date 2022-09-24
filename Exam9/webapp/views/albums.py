@@ -12,7 +12,7 @@ from webapp.models import Photo, Album
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
-class AlbumView(DetailView):
+class AlbumView(LoginRequiredMixin,DetailView):
     template_name = "albums/album_view.html"
     model = Album
     context_object_name = "album"

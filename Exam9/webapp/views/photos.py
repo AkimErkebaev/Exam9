@@ -1,8 +1,12 @@
+from uuid import uuid4
+
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Permission
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 
 # Create your views here.
 from django.utils.http import urlencode
@@ -12,7 +16,7 @@ from webapp.models import Photo, Album
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
-class IndexViewPhotos(ListView):
+class IndexViewPhotos(LoginRequiredMixin, ListView):
     model = Photo
     template_name = "photos/index.html"
     context_object_name = "photos"
@@ -25,7 +29,7 @@ class IndexViewPhotos(ListView):
         return queryset
 
 
-class PhotoView(DetailView):
+class PhotoView(LoginRequiredMixin, DetailView):
     template_name = "photos/photo_view.html"
     model = Photo
     context_object_name = "photo"
@@ -74,3 +78,45 @@ class DeletePhoto(PermissionRequiredMixin, DeleteView):
 
     def has_permission(self):
         return super().has_permission() or self.request.user == self.get_object().user
+
+
+class CreatePhotoToken(LoginRequiredMixin, UpdatePhoto):
+    model = Photo
+    form_class = PhotoDeleteForm
+
+    def has_permission(self):
+        return self.request.user == self.get_object().user
+
+    def get_success_url(self):
+        return self.get_object().get_absolute_url()
+
+    def post(self, request, *args, **kwargs):
+        object = self.get_object()
+
+        if not object.token:
+            token = uuid4().hex
+            object.token = token
+            object.save()
+
+        return redirect('webapp:photo_view', pk=object.pk)
+
+
+class PhotoTokenView(DetailView):
+    template_name = "photos/photo_view.html"
+    model = Photo
+    context_object_name = "photo"
+
+    def get_object(self, queryset=None):
+        queryset = self.get_queryset()
+        token = self.kwargs.get('token')
+        try:
+            obj = queryset.get(token=token)
+        except queryset.model.DoesNotExist:
+            raise Http404(_("No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['favorite_users'] = self.object.favorites_users.all()
+        return context

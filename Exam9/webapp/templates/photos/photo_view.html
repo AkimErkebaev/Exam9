@@ -36,6 +36,21 @@
                     Нет альбома
                 {% endif %}
             </h6>
+            {% if user == photo.user %}
+                {% if photo.token %}
+                    <h6>
+                        <a href="{% url 'webapp:photo_view_token'  token=photo.token %}">
+                            {{ request.get_host }}{% url 'webapp:photo_view_token'  token=photo.token %}
+                        </a>
+                    </h6>
+                {% else %}
+                    <form action="{% url "webapp:create_photo_token" photo.pk %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ photo.pk }}">
+                        <button type="submit" class="btn btn-primary">Сгенерировать ссылку</button>
+                    </form>
+                {% endif %}
+            {% endif %}
             {#            {% if request.user.is_authenticated %}#}
             {#                <a data-photo-id="photo-{{ photo.id }}" class="likes" href="{% url 'webapp:likes' photo.pk %}">#}
             {#                    {% if request.user in photo.likes.all %}Дизлайк{% else %} Лайк {% endif %}#}
@@ -84,9 +99,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                     <form action="{% url "webapp:delete_photo" photo.pk %}" method="post">
+                    <form action="{% url "webapp:delete_photo" photo.pk %}" method="post">
                         {% csrf_token %}
-                         <input type="hidden" value="{{ photo.pk }}">
+                        <input type="hidden" value="{{ photo.pk }}">
                         <button type="submit" class="btn btn-danger">Удалить</button>
                     </form>
                 </div>

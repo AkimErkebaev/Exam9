@@ -14,6 +14,7 @@ class Photo(models.Model):
     album = models.ForeignKey('webapp.Album', related_name="photos", null=True, blank=True, verbose_name='Альбом',
                               on_delete=models.CASCADE)
     is_private = models.BooleanField(default=False)
+    token = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f'{self.pk}'
