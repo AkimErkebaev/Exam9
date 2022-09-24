@@ -7,9 +7,9 @@ from webapp.models import Photo, Album
 
 
 class Profile(models.Model):
-    favorites_photos = models.ManyToManyField(Photo, related_name='favorites_users', null=True,
+    favorites_photos = models.ManyToManyField(Photo, related_name='favorites_users',
                                               verbose_name="Избранные Фото")
-    favorites_albums = models.ManyToManyField(Album, related_name='favorites_users', null=True,
+    favorites_albums = models.ManyToManyField(Album, related_name='favorites_users',
                                               verbose_name="Избранные Альюомы")
     user = models.OneToOneField(get_user_model(),
                                 on_delete=models.CASCADE,

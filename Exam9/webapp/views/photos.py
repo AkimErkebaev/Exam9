@@ -21,7 +21,7 @@ class IndexViewPhotos(LoginRequiredMixin, ListView):
     template_name = "photos/index.html"
     context_object_name = "photos"
     ordering = "-created_at"
-    paginate_by = 2
+    paginate_by = 3
 
     def get_queryset(self):
         queryset = super().get_queryset()

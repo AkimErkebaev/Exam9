@@ -6,7 +6,7 @@
                 <div class="card-body">
                     <img src="{{ photo.photo.url }}" alt="">
                     <h5 class="card-title">{{ photo.signature }}</h5>
-                    <p>Автор: {{ photo.user }}</p>
+                    <p>Автор: <a href="{% url "accounts:profile" request.user.pk %}"> {{ user.username }}</a></p>
                     <p>Альбом:
                         {% if photo.album %}
                         <a href="{{ photo.album.get_absolute_url }}">{{ photo.album.name }}</a>
