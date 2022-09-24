@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block nav %}
+    {% if request.user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url "webapp:create_photo" %}">Создание Фотографии</a>
+        </li>
+        {% if perms.webapp.change_photo or user == photo.user %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "webapp:update_photo" photo.pk %}">Редактировать</a>
+            </li>
+        {% endif %}
+        {#        <li class="nav-item">#}
+        {#            <a class="nav-link" href="{% url "webapp:photo_comment_create" photo.pk %}">Добавить коммент</a>#}
+        {#        </li>#}
+
+        <li class="nav-item">
+            {#            <a class="nav-link" type="button" data-toggle="modal" data-target="#photoDeleteModal">Удалить</a>#}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#photoDeleteModal">
+                Удалить
+            </button>
+        </li>
+
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="card mt-3">
+        <div class="card-body text-center">
+            <h6 class="card-subtitle mb-2 text-muted">Автор: {{ photo.user }}</h6>
+            <p class="card-text">{{ photo.signature }}</p>
+            <img src="{{ photo.photo.url }}" alt="#">
+            <h6>Альбом:
+                {% if photo.album %}
+                    <a href="{{ photo.album.get_absolute_url }}">{{ photo.album.name }}</a>
+                {% else %}
+                    Нет альбома
+                {% endif %}
+            </h6>
+            {#            {% if request.user.is_authenticated %}#}
+            {#                <a data-photo-id="photo-{{ photo.id }}" class="likes" href="{% url 'webapp:likes' photo.pk %}">#}
+            {#                    {% if request.user in photo.likes.all %}Дизлайк{% else %} Лайк {% endif %}#}
+            {#                </a>#}
+            {#            {% endif %}#}
+        </div>
+    </div>
+    {#    <h3 class="my-3 text-center">Комментарии</h3>#}
+    {#    <div class="row">#}
+    {#        {% for comment in comments %}#}
+    {#            <div class="col-12 col-md-6 col-lg-4">#}
+    {#                <div class="card mb-3">#}
+    {#                    <div class="card-body">#}
+    {#                        <p class="card-text">{{ comment.text }}</p>#}
+    {#                    </div>#}
+    {#                    <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">#}
+    {#                        <a class="btn btn-danger" href="{% url "webapp:update_comment" comment.pk %}">Изменить</a>#}
+    {#                        <a class="btn btn-warning" href="{% url "webapp:delete_comment" comment.pk %}">Удалить</a>#}
+    {#                    </div>#}
+    {#                    {% if request.user.is_authenticated %}#}
+    {#                        <a data-comment-id="comment-{{ comment.id }}" class="commentlikes"#}
+    {#                           href="{% url 'webapp:commentlikes' comment.pk %}">#}
+    {#                            {% if request.user in comment.commentlikes.all %}Дизлайк{% else %} Лайк {% endif %}#}
+    {#                        </a>#}
+    {#                    {% endif %}#}
+    {#                    <span id="comment-{{ comment.id }}">Лайки: {{ comment.commentlikes.count }}</span>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            {% empty %}#}
+    {#            <p>Комментариев нет</p>#}
+    {#        {% endfor %}#}
+    {#    </div>#}
+
+    <a href="{% url "webapp:index" %}">На главную</a>
+
+    <!-- Модальное окно -->
+    <div class="modal fade" id="photoDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Заголовок модального окна</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены что хотите удалить фотографию?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                     <form action="{% url "webapp:delete_photo" photo.pk %}" method="post">
+                        {% csrf_token %}
+                         <input type="hidden" value="{{ photo.pk }}">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+<h1 class="text-center">Приватные Фотки</h1>
+<div class="row">
+    {% for photo in private_photos %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <img src="{{ photo.photo.url }}" alt="">
+                    <h5 class="card-title">{{ photo.signature }}</h5>
+                    <p>Автор: {{ photo.user }}</p>
+                    <p>Альбом:
+                        {% if photo.album %}
+                        <a href="{{ photo.album.get_absolute_url }}">{{ photo.album.name }}</a>
+                        {% else %}
+                        Нет альбома
+                        {% endif %}
+                    </p>
+                </div>
+                <a href="{{ photo.get_absolute_url }}" class="card-link btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+        {% empty %}
+    {% endfor %}
+    {% if is_paginated %}
+        <div class="text-center">{% include "partial/pagination.html" %}</div>
+    {% endif %}
+</div>

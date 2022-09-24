@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}
+
+    {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url "webapp:create_photo" %}">Создание фотографии</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url "webapp:create_album" %}">Создание альбома</a>
+        </li>
+    {% endif %}
+{% endblock %}
+{% block content %}
+
+    {% include "partial/photos_list_partial.html" %}
+{% endblock %}
+
